@@ -1,0 +1,9 @@
+[build]
+builder = "NIXPACKS"
+watchPatterns = ["server/**", "shared/**"]
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"

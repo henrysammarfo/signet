@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TreasuryRouteImport } from './routes/treasury'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as CreateRouteImport } from './routes/create'
+import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SignalIdRouteImport } from './routes/signal.$id'
 import { Route as AgentIdRouteImport } from './routes/agent.$id'
 
 const TreasuryRoute = TreasuryRouteImport.update({
@@ -31,14 +34,29 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreateRoute = CreateRouteImport.update({
   id: '/create',
   path: '/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignalIdRoute = SignalIdRouteImport.update({
+  id: '/signal/$id',
+  path: '/signal/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentIdRoute = AgentIdRouteImport.update({
@@ -49,63 +67,84 @@ const AgentIdRoute = AgentIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
   '/create': typeof CreateRoute
+  '/developers': typeof DevelopersRoute
   '/leaderboard': typeof LeaderboardRoute
   '/marketplace': typeof MarketplaceRoute
   '/treasury': typeof TreasuryRoute
   '/agent/$id': typeof AgentIdRoute
+  '/signal/$id': typeof SignalIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
   '/create': typeof CreateRoute
+  '/developers': typeof DevelopersRoute
   '/leaderboard': typeof LeaderboardRoute
   '/marketplace': typeof MarketplaceRoute
   '/treasury': typeof TreasuryRoute
   '/agent/$id': typeof AgentIdRoute
+  '/signal/$id': typeof SignalIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
   '/create': typeof CreateRoute
+  '/developers': typeof DevelopersRoute
   '/leaderboard': typeof LeaderboardRoute
   '/marketplace': typeof MarketplaceRoute
   '/treasury': typeof TreasuryRoute
   '/agent/$id': typeof AgentIdRoute
+  '/signal/$id': typeof SignalIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agents'
     | '/create'
+    | '/developers'
     | '/leaderboard'
     | '/marketplace'
     | '/treasury'
     | '/agent/$id'
+    | '/signal/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agents'
     | '/create'
+    | '/developers'
     | '/leaderboard'
     | '/marketplace'
     | '/treasury'
     | '/agent/$id'
+    | '/signal/$id'
   id:
     | '__root__'
     | '/'
+    | '/agents'
     | '/create'
+    | '/developers'
     | '/leaderboard'
     | '/marketplace'
     | '/treasury'
     | '/agent/$id'
+    | '/signal/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentsRoute: typeof AgentsRoute
   CreateRoute: typeof CreateRoute
+  DevelopersRoute: typeof DevelopersRoute
   LeaderboardRoute: typeof LeaderboardRoute
   MarketplaceRoute: typeof MarketplaceRoute
   TreasuryRoute: typeof TreasuryRoute
   AgentIdRoute: typeof AgentIdRoute
+  SignalIdRoute: typeof SignalIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -131,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/create': {
       id: '/create'
       path: '/create'
@@ -138,11 +184,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signal/$id': {
+      id: '/signal/$id'
+      path: '/signal/$id'
+      fullPath: '/signal/$id'
+      preLoaderRoute: typeof SignalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agent/$id': {
@@ -157,12 +217,25 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentsRoute: AgentsRoute,
   CreateRoute: CreateRoute,
+  DevelopersRoute: DevelopersRoute,
   LeaderboardRoute: LeaderboardRoute,
   MarketplaceRoute: MarketplaceRoute,
   TreasuryRoute: TreasuryRoute,
   AgentIdRoute: AgentIdRoute,
+  SignalIdRoute: SignalIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

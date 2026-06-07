@@ -14,7 +14,23 @@ dist-ssr
 .vinxi
 .tanstack/**
 .nitro
+.vercel
 *.local
+.env
+.env.*
+!.env.example
+data/
+server/.env
+
+# Local import files (fill secrets, import to Vercel/Railway, then delete)
+deploy/vercel.env
+deploy/railway.env
+
+# Lovable scaffold (removed)
+.lovable/
+
+# Internal / hackathon docs — keep local only
+docs/_private/
 
 # Wrangler / Cloudflare
 .wrangler/
