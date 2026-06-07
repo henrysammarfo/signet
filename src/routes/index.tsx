@@ -83,9 +83,9 @@ function Index() {
       };
 
   return (
-    <main className="h-screen overflow-y-auto overflow-x-hidden font-manrope bg-black relative">
-      {/* ── HERO (template spec) ── */}
-      <section className="relative h-screen w-full overflow-hidden">
+    <main className="min-h-dvh w-full overflow-x-hidden font-manrope bg-black relative">
+      {/* ── HERO ── */}
+      <section className="relative min-h-dvh w-full overflow-hidden">
         <div className="absolute inset-0 z-10 bg-black">
           <video
             ref={videoRef}
@@ -101,14 +101,14 @@ function Index() {
           </video>
         </div>
 
-        <div className="absolute inset-0 z-30 pointer-events-none">
-          {/* Top-left: logo + tagline + desktop paragraphs */}
-          <div className="absolute top-[24px] left-[20px] md:top-[64px] md:left-[64px] pointer-events-auto max-w-[calc(100vw-140px)] md:max-w-none">
-            <div className="flex items-center gap-[16px] md:gap-[24px]">
-              <div className="flex-shrink-0 w-[48px] h-[48px] md:w-[64px] md:h-[64px]">
+        <div className="relative z-30 flex flex-col min-h-dvh px-4 sm:px-6 md:px-10 lg:px-16 py-5 sm:py-6 md:py-10 pointer-events-none">
+          {/* Top bar */}
+          <div className="flex items-start justify-between gap-3 sm:gap-4 pointer-events-auto min-w-0">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+              <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16">
                 <SignetLogo />
               </div>
-              <div className="text-white text-[11px] md:text-[16px] w-[112px] md:w-auto leading-[1.2] font-semibold tracking-[0.02em]">
+              <div className="text-white text-[10px] sm:text-[11px] md:text-base leading-[1.2] font-semibold tracking-[0.02em] min-w-0">
                 <span className="hidden md:block">
                   Verified Signal Oracle.
                   <br />
@@ -117,49 +117,45 @@ function Index() {
                   You Prosper.
                 </span>
                 <span className="block md:hidden">
-                  Verified Signal
-                  <br />
-                  Oracle. Agents Settle
-                  <br />
-                  On-Chain. You Prosper.
+                  Verified Signal Oracle. Agents settle on-chain.
                 </span>
               </div>
             </div>
 
-            <div className="hidden md:flex mt-[400px] flex-col gap-[24px] w-full max-w-[320px] text-white text-[14px] font-normal leading-relaxed">
-              {DESKTOP_PARAS.map((text) => (
-                <p key={text.slice(0, 24)}>{text}</p>
-              ))}
-            </div>
-          </div>
-
-          {/* Top-right: CTA */}
-          <div className="absolute top-[24px] right-[20px] md:top-[64px] md:right-[64px] pointer-events-auto">
-            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }}>
+            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }} className="shrink-0">
               <Link
                 to="/marketplace"
-                className="inline-block rounded-[100%] border border-white/40 text-white text-[14px] md:text-[16px] font-semibold px-[20px] py-[10px] md:px-[28px] md:py-[14px] bg-black/10 backdrop-blur-sm md:bg-transparent md:backdrop-blur-0 transition-all duration-200 hover:bg-white hover:text-black md:hover:backdrop-blur-sm"
+                className="inline-block rounded-full border border-white/40 text-white text-xs sm:text-sm md:text-base font-semibold px-4 py-2 sm:px-5 sm:py-2.5 md:px-7 md:py-3.5 bg-black/20 backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-black whitespace-nowrap"
               >
                 Get started
               </Link>
             </motion.div>
           </div>
 
-          {/* Bottom: heading + mobile paragraphs */}
+          {/* Desktop side copy */}
+          <div className="hidden lg:flex flex-col gap-5 w-full max-w-[300px] xl:max-w-[320px] mt-16 xl:mt-24 text-white text-sm leading-relaxed pointer-events-auto">
+            {DESKTOP_PARAS.map((text) => (
+              <p key={text.slice(0, 24)}>{text}</p>
+            ))}
+          </div>
+
+          <div className="flex-1 min-h-[1rem]" aria-hidden />
+
+          {/* Bottom headline */}
           <motion.div
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.25 }}
-            className="absolute bottom-[32px] left-[20px] right-[20px] md:left-auto md:bottom-[64px] md:right-[64px] md:max-w-[1200px] text-left md:text-right pointer-events-auto flex flex-col md:block"
+            className="pointer-events-auto w-full min-w-0 pb-2 md:pb-0 md:text-right"
           >
-            <div className="md:hidden flex flex-col gap-[16px] w-full max-w-[280px] text-white text-[12px] font-normal mb-[32px] text-left">
+            <div className="lg:hidden flex flex-col gap-3 w-full max-w-md text-white text-xs sm:text-sm mb-6 text-left">
               {DESKTOP_PARAS.map((text) => (
-                <p key={text.slice(0, 20)} className="leading-[16px]">
+                <p key={text.slice(0, 20)} className="leading-relaxed">
                   {text}
                 </p>
               ))}
             </div>
 
-            <h1 className="font-italiana text-white text-[32px] md:text-[96px] leading-[1] tracking-[-0.02em]">
+            <h1 className="font-italiana text-white leading-[1.02] tracking-[-0.02em] break-words text-[clamp(1.75rem,6vw,5.5rem)] max-w-full md:ml-auto md:max-w-[min(100%,52rem)]">
               <span className="hidden md:block">
                 Intelligent On-Chain
                 <br />
@@ -189,7 +185,7 @@ function Index() {
             We built this oracle with a single purpose — to eliminate signal chaos and restore trust to
             on-chain alpha discovery.
           </p>
-          <p className="font-marck text-white text-[64px] md:text-[96px] leading-none tracking-wide">
+          <p className="font-marck text-white text-[clamp(3rem,12vw,6rem)] leading-none tracking-wide">
             SIGNET
           </p>
           <p className="font-italiana text-[22px] md:text-[28px] text-white/80 italic">
@@ -224,7 +220,7 @@ function Index() {
       {/* ── FOUR PRIMITIVES ── */}
       <section className="relative w-full bg-[#0A0F1E] text-white py-[120px] md:py-[160px] px-6">
         <div className="max-w-[1200px] mx-auto">
-          <h2 className="font-italiana text-[40px] md:text-[80px] leading-[1] tracking-[-0.02em] mb-[64px] max-w-[900px]">
+          <h2 className="font-italiana text-[clamp(2rem,6vw,5rem)] leading-[1] tracking-[-0.02em] mb-10 md:mb-16 max-w-full">
             Four primitives.
             <br />
             One autonomous market.
@@ -264,7 +260,7 @@ function Index() {
 
       {/* ── FOOTER CTA ── */}
       <section className="relative w-full bg-[#5c1212] text-white py-[120px] md:py-[140px] px-6 text-center overflow-hidden">
-        <h2 className="font-italiana text-[48px] md:text-[96px] leading-[0.95] tracking-[-0.02em] max-w-[1000px] mx-auto">
+        <h2 className="font-italiana text-[clamp(2rem,7vw,6rem)] leading-[0.95] tracking-[-0.02em] max-w-full mx-auto px-2">
           Trade the signal.
           <br />
           Not the noise.

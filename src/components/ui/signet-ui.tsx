@@ -18,7 +18,7 @@ export function PageSection({
   className?: string;
 }) {
   return (
-    <section className={`max-w-[960px] mx-auto px-5 md:px-6 pb-24 ${className}`}>{children}</section>
+    <section className={`max-w-[960px] mx-auto w-full min-w-0 px-4 sm:px-5 md:px-6 pb-16 md:pb-24 ${className}`}>{children}</section>
   );
 }
 
@@ -207,29 +207,33 @@ export function DataTable({
 }) {
   return (
     <PageCard className="overflow-hidden">
-      <div
-        className="grid px-5 py-3 text-[11px] text-white/35 border-b border-white/[0.06] gap-4"
-        style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
-      >
-        {columns.map((col) => (
-          <span key={col.key} className={col.align === "right" ? "text-right" : ""}>
-            {col.label}
-          </span>
-        ))}
-      </div>
-      {rows.map((row, i) => (
-        <div
-          key={i}
-          className="grid px-5 py-4 border-b border-white/[0.04] last:border-0 items-center gap-4 text-sm text-white/80"
-          style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
-        >
-          {columns.map((col) => (
-            <div key={col.key} className={col.align === "right" ? "text-right" : ""}>
-              {row[col.key]}
+      <div className="overflow-x-auto">
+        <div className="min-w-[520px]">
+          <div
+            className="grid px-5 py-3 text-[11px] text-white/35 border-b border-white/[0.06] gap-4"
+            style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
+          >
+            {columns.map((col) => (
+              <span key={col.key} className={col.align === "right" ? "text-right" : ""}>
+                {col.label}
+              </span>
+            ))}
+          </div>
+          {rows.map((row, i) => (
+            <div
+              key={i}
+              className="grid px-5 py-4 border-b border-white/[0.04] last:border-0 items-center gap-4 text-sm text-white/80"
+              style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
+            >
+              {columns.map((col) => (
+                <div key={col.key} className={col.align === "right" ? "text-right" : ""}>
+                  {row[col.key]}
+                </div>
+              ))}
             </div>
           ))}
         </div>
-      ))}
+      </div>
       {!rows.length && empty && (
         <div className="px-5 py-10 text-center text-white/35 text-sm">{empty}</div>
       )}

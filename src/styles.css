@@ -143,8 +143,23 @@
     border-color: var(--color-border);
   }
 
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100dvh;
+  }
+
+  #root,
+  body > main {
+    max-width: 100%;
   }
 }
