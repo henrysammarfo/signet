@@ -1,6 +1,6 @@
 # Install only server deps; full repo stays available for ../shared imports.
 [variables]
-NIXPACKS_NODE_VERSION = "20"
+NIXPACKS_NODE_VERSION = "22"
 
 [phases.install]
 cmds = ["npm ci --prefix server", "npm ci --prefix shared --omit=dev"]
