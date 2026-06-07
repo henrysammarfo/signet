@@ -91,25 +91,42 @@ app.get("/health", async (c) => {
   });
 });
 
+app.get("/health/db", async (c) => {
+  try {
+    await getSignal("00000000-0000-0000-0000-000000000000");
+    return c.json({ ok: true, supabase: "reachable" });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("[health/db]", message);
+    return c.json({ ok: false, error: message }, 503);
+  }
+});
+
 app.use("/signals/:id", async (c, next) => {
-  const signal = await getSignal(c.req.param("id"));
-  if (!signal) {
-    return c.json({ error: "Signal not found" }, 404);
-  }
+  try {
+    const signal = await getSignal(c.req.param("id"));
+    if (!signal) {
+      return c.json({ error: "Signal not found" }, 404);
+    }
 
-  if (signal.embargo_until && Date.now() < new Date(signal.embargo_until).getTime()) {
-    return c.json(
-      {
-        preview: signal.title,
-        embargo_until: signal.embargo_until,
-        message: "Signal is time-locked until embargo expires",
-      },
-      202,
-    );
-  }
+    if (signal.embargo_until && Date.now() < new Date(signal.embargo_until).getTime()) {
+      return c.json(
+        {
+          preview: signal.title,
+          embargo_until: signal.embargo_until,
+          message: "Signal is time-locked until embargo expires",
+        },
+        202,
+      );
+    }
 
-  c.set("signetSignal", signal);
-  await next();
+    c.set("signetSignal", signal);
+    await next();
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("[signals middleware]", message);
+    return c.json({ error: "Database unavailable", detail: message }, 503);
+  }
 });
 
 app.use(paymentMiddlewareFromHTTPServer(httpResourceServer));
@@ -148,6 +165,14 @@ app.get("/signals/:id", async (c) => {
     verified: true,
     network: ALGORAND_TESTNET_CAIP2,
   });
+});
+
+app.onError((err, c) => {
+  console.error("[x402]", err);
+  return c.json(
+    { error: "Internal Server Error", detail: err instanceof Error ? err.message : String(err) },
+    500,
+  );
 });
 
 serve({ fetch: app.fetch, port }, () => {
