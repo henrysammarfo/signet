@@ -159,20 +159,63 @@
   }
 
   .hero-video-crop {
+    position: absolute;
+    inset: 0;
     overflow: hidden;
   }
 
+  /* Show the top of the frame; clip only the bottom strip (Kling watermark). No transform scale — keeps browser zoom in sync. */
   .hero-video {
+    display: block;
+    width: 100%;
+    height: 106%;
     object-fit: cover;
-    object-position: 48% 38%;
-    transform: scale(1.15);
-    transform-origin: center 42%;
+    object-position: center top;
   }
 
-  @media (max-width: 767px) {
+  .hero-watermark-mask {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3.25rem;
+    background: linear-gradient(to top, #5c1212 0%, #5c1212 35%, rgb(0 0 0 / 0.65) 70%, transparent);
+    pointer-events: none;
+  }
+
+  .hero-watermark-corner {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 11rem;
+    height: 2.75rem;
+    background: linear-gradient(to top left, #5c1212 0%, #5c1212 50%, transparent 100%);
+    pointer-events: none;
+  }
+
+  @media (min-width: 640px) {
+    .hero-watermark-mask {
+      height: 3.75rem;
+    }
+
+    .hero-watermark-corner {
+      width: 13rem;
+      height: 3rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
     .hero-video {
-      object-position: center 32%;
-      transform: scale(1.2);
+      height: 104%;
+    }
+
+    .hero-watermark-mask {
+      height: 4.25rem;
+    }
+
+    .hero-watermark-corner {
+      width: 15rem;
+      height: 3.25rem;
     }
   }
 

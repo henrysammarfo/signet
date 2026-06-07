@@ -63,8 +63,8 @@ function HeroBackground({ poster }: { poster: string }) {
   }, [poster, reduced]);
 
   return (
-    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-black">
-      <div className="hero-video-crop absolute inset-0">
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-black">
+      <div className="hero-video-crop">
         <video
           ref={videoRef}
           autoPlay={!reduced}
@@ -73,17 +73,15 @@ function HeroBackground({ poster }: { poster: string }) {
           playsInline
           preload="auto"
           poster={poster}
-          className="hero-video h-full w-full"
+          className="hero-video"
         >
           <source src={VIDEO_SRC} type="video/mp4" />
         </video>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/20 to-black/85" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-black/55" />
-      <div
-        className="absolute bottom-0 right-0 h-[22%] w-[32%] bg-gradient-to-tl from-black from-35% via-black/95 to-transparent"
-        aria-hidden
-      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/45" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/25 via-transparent to-black/30" />
+      <div className="hero-watermark-mask" aria-hidden />
+      <div className="hero-watermark-corner" aria-hidden />
     </div>
   );
 }
@@ -109,12 +107,12 @@ function Index() {
       };
 
   return (
-    <main className="min-h-dvh w-full overflow-x-hidden font-manrope bg-black">
+    <main className="min-h-screen w-full overflow-x-hidden font-manrope bg-black">
       {/* ── HERO ── */}
-      <section className="relative isolate min-h-dvh w-full overflow-hidden pb-8 sm:pb-12 md:pb-16">
+      <section className="relative isolate w-full overflow-hidden min-h-[38rem] sm:min-h-[42rem] md:min-h-[44rem] lg:min-h-[46rem]">
         <HeroBackground poster={poster} />
 
-        <div className="relative mx-auto flex min-h-dvh w-full max-w-7xl flex-col px-4 pb-6 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pb-8 sm:pt-8 lg:px-10 lg:pb-10 lg:pt-10">
+        <div className="relative z-10 mx-auto flex min-h-[inherit] w-full max-w-7xl flex-col px-4 pb-8 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pb-10 sm:pt-8 md:px-8 lg:px-10 lg:pb-12 lg:pt-10">
           {/* Top bar */}
           <header className="flex shrink-0 items-start justify-between gap-3 sm:gap-6">
             <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
@@ -139,8 +137,8 @@ function Index() {
             </motion.div>
           </header>
 
-          {/* Side copy — large screens only, never overlaps headline */}
-          <div className="mt-8 hidden max-w-sm flex-col gap-4 text-sm leading-relaxed text-white/90 xl:flex">
+          {/* Side copy — desktop only */}
+          <div className="mt-6 hidden max-w-sm flex-col gap-3 text-sm leading-relaxed text-white/90 lg:mt-8 lg:flex lg:gap-4">
             {DESKTOP_PARAS.map((text) => (
               <p key={text.slice(0, 24)} className="text-pretty">
                 {text}
@@ -150,13 +148,13 @@ function Index() {
 
           <div className="min-h-6 flex-1" aria-hidden />
 
-          {/* Headline — always visible, scales with viewport */}
+          {/* Headline — rem-based so it zooms with the page, not viewport units */}
           <motion.div
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.2 }}
-            className="shrink-0 md:ml-auto md:max-w-3xl md:text-right lg:max-w-4xl"
+            className="shrink-0 md:ml-auto md:max-w-2xl md:text-right lg:max-w-3xl xl:max-w-4xl"
           >
-            <h1 className="font-italiana text-balance text-[length:clamp(1.625rem,4.5vw+0.5rem,4.75rem)] leading-[1.05] tracking-[-0.02em] text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.65)]">
+            <h1 className="font-italiana text-balance text-[1.625rem] leading-[1.08] tracking-[-0.02em] text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.55)] sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl 2xl:text-6xl">
               <span className="hidden sm:block">
                 Intelligent on-chain signal markets for autonomous agents.
                 <span className="block mt-1 text-white/95">You earn.</span>
@@ -169,8 +167,8 @@ function Index() {
         </div>
       </section>
 
-      {/* ── MANIFESTO — overlaps hero bottom to mask video watermark ── */}
-      <section className="relative z-20 -mt-12 w-full overflow-hidden bg-[#5c1212] px-4 py-20 text-white sm:-mt-16 sm:px-6 md:-mt-24 md:py-28 lg:py-32">
+      {/* ── MANIFESTO — overlaps hero bottom strip to hide watermark ── */}
+      <section className="relative z-20 -mt-10 w-full overflow-hidden bg-[#5c1212] px-4 py-16 text-white sm:-mt-12 sm:px-6 sm:py-20 md:-mt-14 md:py-24 lg:-mt-16 lg:py-28">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#f5e6d3]/20 to-transparent"
           aria-hidden
