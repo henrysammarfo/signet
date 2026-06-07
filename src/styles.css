@@ -178,8 +178,8 @@
     right: 0;
     bottom: 0;
     left: 0;
-    height: 3.25rem;
-    background: linear-gradient(to top, #5c1212 0%, #5c1212 35%, rgb(0 0 0 / 0.65) 70%, transparent);
+    height: 2.5rem;
+    background: linear-gradient(to top, #5c1212 0%, #5c1212 45%, rgb(0 0 0 / 0.5) 80%, transparent);
     pointer-events: none;
   }
 
@@ -187,20 +187,20 @@
     position: absolute;
     right: 0;
     bottom: 0;
-    width: 11rem;
-    height: 2.75rem;
-    background: linear-gradient(to top left, #5c1212 0%, #5c1212 50%, transparent 100%);
+    width: 9rem;
+    height: 2.25rem;
+    background: linear-gradient(to top left, #5c1212 0%, #5c1212 55%, transparent 100%);
     pointer-events: none;
   }
 
   @media (min-width: 640px) {
     .hero-watermark-mask {
-      height: 3.75rem;
+      height: 2.75rem;
     }
 
     .hero-watermark-corner {
-      width: 13rem;
-      height: 3rem;
+      width: 10rem;
+      height: 2.5rem;
     }
   }
 
@@ -210,12 +210,12 @@
     }
 
     .hero-watermark-mask {
-      height: 4.25rem;
+      height: 3rem;
     }
 
     .hero-watermark-corner {
-      width: 15rem;
-      height: 3.25rem;
+      width: 12rem;
+      height: 2.75rem;
     }
   }
 

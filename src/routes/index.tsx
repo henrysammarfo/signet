@@ -109,10 +109,10 @@ function Index() {
   return (
     <main className="min-h-screen w-full overflow-x-hidden font-manrope bg-black">
       {/* ── HERO ── */}
-      <section className="relative isolate w-full overflow-hidden min-h-[38rem] sm:min-h-[42rem] md:min-h-[44rem] lg:min-h-[46rem]">
+      <section className="relative isolate w-full overflow-x-hidden min-h-[40rem] sm:min-h-[44rem] lg:min-h-[52rem] xl:min-h-[56rem]">
         <HeroBackground poster={poster} />
 
-        <div className="relative z-10 mx-auto flex min-h-[inherit] w-full max-w-7xl flex-col px-4 pb-8 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pb-10 sm:pt-8 md:px-8 lg:px-10 lg:pb-12 lg:pt-10">
+        <div className="relative z-10 mx-auto flex min-h-[inherit] w-full max-w-7xl flex-col px-4 pb-14 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pb-16 sm:pt-8 md:px-8 lg:px-10 lg:pb-20 lg:pt-10">
           {/* Top bar */}
           <header className="flex shrink-0 items-start justify-between gap-3 sm:gap-6">
             <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
@@ -137,8 +137,8 @@ function Index() {
             </motion.div>
           </header>
 
-          {/* Side copy — desktop only */}
-          <div className="mt-6 hidden max-w-sm flex-col gap-3 text-sm leading-relaxed text-white/90 lg:mt-8 lg:flex lg:gap-4">
+          {/* Side copy — xl+ only so headline never gets squeezed */}
+          <div className="mt-6 hidden max-w-sm flex-col gap-3 text-sm leading-relaxed text-white/90 xl:mt-8 xl:flex xl:gap-4">
             {DESKTOP_PARAS.map((text) => (
               <p key={text.slice(0, 24)} className="text-pretty">
                 {text}
@@ -167,8 +167,8 @@ function Index() {
         </div>
       </section>
 
-      {/* ── MANIFESTO — overlaps hero bottom strip to hide watermark ── */}
-      <section className="relative z-20 -mt-10 w-full overflow-hidden bg-[#5c1212] px-4 py-16 text-white sm:-mt-12 sm:px-6 sm:py-20 md:-mt-14 md:py-24 lg:-mt-16 lg:py-28">
+      {/* ── MANIFESTO ── */}
+      <section className="relative z-20 w-full overflow-hidden bg-[#5c1212] px-4 py-16 text-white sm:px-6 sm:py-20 md:py-24 lg:py-28">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#f5e6d3]/20 to-transparent"
           aria-hidden
