@@ -158,6 +158,24 @@
     min-height: 100dvh;
   }
 
+  .hero-video-crop {
+    overflow: hidden;
+  }
+
+  .hero-video {
+    object-fit: cover;
+    object-position: 48% 38%;
+    transform: scale(1.15);
+    transform-origin: center 42%;
+  }
+
+  @media (max-width: 767px) {
+    .hero-video {
+      object-position: center 32%;
+      transform: scale(1.2);
+    }
+  }
+
   #root,
   body > main {
     max-width: 100%;

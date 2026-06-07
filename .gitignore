@@ -46,3 +46,7 @@ docs/_private/
 *.njsproj
 *.sln
 *.sw?
+
+# Watermarked / source hero videos (use poster PNGs only)
+public/hero/kling*
+public/hero/*kling*
