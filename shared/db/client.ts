@@ -22,7 +22,14 @@ async function getSupabaseClient() {
   assertDatabaseConfigured();
   const { url, key } = getSupabaseConfig();
   const { createClient } = await import("@supabase/supabase-js");
-  return createClient(url, key);
+  try {
+    const ws = await import("ws");
+    return createClient(url, key, {
+      realtime: { transport: ws.default },
+    });
+  } catch {
+    return createClient(url, key);
+  }
 }
 
 function hashContent(content: string): string {
