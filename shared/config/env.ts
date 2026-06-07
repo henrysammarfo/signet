@@ -41,7 +41,10 @@ export function getServerEnv() {
     folksXAlgoAppId: optionalEnv("FOLKS_XALGO_APP_ID"),
     folksXAlgoAsaId: optionalEnv("FOLKS_XALGO_ASA_ID"),
     autoStakeXAlgo: optionalEnv("AUTO_STAKE_XALGO", "false") === "true",
-    appOrigin: optionalEnv("VITE_APP_ORIGIN", "http://localhost:5173"),
+    appOrigin: optionalEnv(
+      "VITE_APP_ORIGIN",
+      "http://localhost:8080,http://localhost:5173,http://127.0.0.1:8080",
+    ),
   };
 }
 

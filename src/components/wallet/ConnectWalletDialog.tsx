@@ -36,7 +36,7 @@ export function ConnectWalletDialog({ open, onOpenChange, onSelect, connecting, 
         <DialogHeader>
           <DialogTitle className="text-white text-lg font-medium">Connect wallet</DialogTitle>
           <DialogDescription className="text-white/45 text-[13px]">
-            Choose your Algorand wallet. Testnet only — no real money.
+            Choose your Algorand wallet. One connection works across all of SIGNET.
           </DialogDescription>
         </DialogHeader>
 
@@ -72,8 +72,8 @@ export function ConnectWalletDialog({ open, onOpenChange, onSelect, connecting, 
         )}
 
         <p className="text-[11px] text-white/25 mt-3 leading-relaxed">
-          New to crypto? You can browse the marketplace without connecting. A wallet is only needed
-          to publish signals and receive payments.
+          Browse the marketplace without a wallet. Connect when you want to publish, buy, or manage
+          treasury.
         </p>
       </DialogContent>
     </Dialog>

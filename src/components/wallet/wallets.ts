@@ -1,4 +1,4 @@
-export type WalletKind = "pera" | "lute" | "extension";
+import type { WalletKind } from "./wallets";
 
 export type WalletOption = {
   id: WalletKind;
@@ -32,11 +32,21 @@ type AlgorandProvider = {
   enable?: () => Promise<string[]>;
 };
 
+let peraSession: import("@perawallet/connect").PeraWalletConnect | null = null;
+
 async function fetchTestnetGenesisId() {
   const res = await fetch(TESTNET_GENESIS_URL);
   if (!res.ok) throw new Error("Could not reach Algorand testnet");
   const genesis = (await res.json()) as { network?: string; id?: string };
   return `${genesis.network}-${genesis.id}`;
+}
+
+async function getPeraWallet() {
+  if (!peraSession) {
+    const { PeraWalletConnect } = await import("@perawallet/connect");
+    peraSession = new PeraWalletConnect({ chainId: 416002 });
+  }
+  return peraSession;
 }
 
 async function connectBrowserExtension() {
@@ -61,8 +71,7 @@ async function connectLute() {
 }
 
 async function connectPera() {
-  const { PeraWalletConnect } = await import("@perawallet/connect");
-  const pera = new PeraWalletConnect({ chainId: 416002 });
+  const pera = await getPeraWallet();
   const accounts = await pera.connect();
   const account = accounts[0];
   if (!account) throw new Error("Pera connection was cancelled.");
@@ -80,6 +89,32 @@ export async function connectWallet(kind: WalletKind): Promise<string> {
     default:
       throw new Error("Unsupported wallet");
   }
+}
+
+/** Restore wallet provider session after reload (Pera/Lute). */
+export async function reconnectWallet(kind: WalletKind, expectedAddress: string) {
+  if (kind === "pera") {
+    const pera = await getPeraWallet();
+    const accounts = await pera.reconnectToSession();
+    const account = accounts[0];
+    if (!account || account !== expectedAddress) {
+      throw new Error("Pera session expired");
+    }
+    return account;
+  }
+
+  if (kind === "extension") {
+    const algorand = (window as Window & { algorand?: AlgorandProvider }).algorand;
+    if (!algorand?.enable) throw new Error("Wallet extension unavailable");
+    const accounts = await algorand.enable();
+    if (!accounts.includes(expectedAddress)) {
+      throw new Error("Wallet account mismatch");
+    }
+    return expectedAddress;
+  }
+
+  // Lute keeps session in extension — stored address is enough for UI.
+  return expectedAddress;
 }
 
 export function walletLabel(kind: WalletKind | null): string | null {

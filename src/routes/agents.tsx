@@ -54,7 +54,7 @@ function DashboardPage() {
           <p className="text-[14px] text-white/35 mt-2 max-w-lg leading-relaxed">
             {address
               ? "Publish insights, track earnings, and buy signals from top analysts — pay only for what you use."
-              : "Browse verified market signals without signing up. Connect a wallet when you're ready to publish or pay."}
+              : "Browse verified market signals. Connect your wallet once — it works across every page."}
           </p>
         </div>
 
@@ -141,8 +141,7 @@ function DashboardPage() {
 
             {balance && !balance.usdcOptedIn && (
               <p className="text-[13px] text-amber-400/80 mb-6 max-w-lg">
-                Add testnet USDC to your wallet to buy signals. Payments use Circle USDC on Algorand
-                testnet.
+                Add USDC to your wallet to buy signals on the marketplace.
               </p>
             )}
           </>

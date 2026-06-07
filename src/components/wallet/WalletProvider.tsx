@@ -1,19 +1,33 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { ConnectWalletDialog } from "./ConnectWalletDialog";
 import {
+  clearStoredWallet,
+  readStoredWallet,
+  subscribeStoredWallet,
+  writeStoredWallet,
+  type StoredWallet,
+} from "../../lib/wallet/storage";
+import {
   connectWallet,
+  reconnectWallet,
   walletLabel,
   type WalletKind,
 } from "./wallets";
-
-const STORAGE_ADDRESS = "signet_wallet_address";
-const STORAGE_WALLET = "signet_wallet_kind";
 
 interface WalletContextValue {
   address: string | null;
   walletKind: WalletKind | null;
   walletName: string | null;
+  ready: boolean;
   connecting: boolean;
   error: string | null;
   openConnect: () => void;
@@ -24,28 +38,37 @@ interface WalletContextValue {
 const WalletContext = createContext<WalletContextValue | null>(null);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [address, setAddress] = useState<string | null>(null);
-  const [walletKind, setWalletKind] = useState<WalletKind | null>(null);
+  const [stored, setStored] = useState<StoredWallet>({ address: null, kind: null });
+  const [ready, setReady] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
-    const storedAddress = localStorage.getItem(STORAGE_ADDRESS);
-    const storedKind = localStorage.getItem(STORAGE_WALLET) as WalletKind | null;
-    if (storedAddress) setAddress(storedAddress);
-    if (storedKind) setWalletKind(storedKind);
+    setStored(readStoredWallet());
+    setReady(true);
+
+    return subscribeStoredWallet(() => {
+      setStored(readStoredWallet());
+    });
   }, []);
 
-  const connectWith = async (kind: WalletKind) => {
+  useEffect(() => {
+    if (!ready) return;
+    const { address, kind } = readStoredWallet();
+    if (!address || !kind) return;
+    void reconnectWallet(kind, address).catch(() => {
+      /* Keep stored address visible; wallet re-auth happens on sign */
+    });
+  }, [ready]);
+
+  const connectWith = useCallback(async (kind: WalletKind) => {
     setConnecting(true);
     setError(null);
     try {
       const account = await connectWallet(kind);
-      localStorage.setItem(STORAGE_ADDRESS, account);
-      localStorage.setItem(STORAGE_WALLET, kind);
-      setAddress(account);
-      setWalletKind(kind);
+      writeStoredWallet(account, kind);
+      setStored({ address: account, kind });
     } catch (e) {
       const message = e instanceof Error ? e.message : "Wallet connection failed";
       setError(message);
@@ -53,32 +76,34 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     } finally {
       setConnecting(false);
     }
-  };
+  }, []);
 
-  const disconnect = () => {
-    localStorage.removeItem(STORAGE_ADDRESS);
-    localStorage.removeItem(STORAGE_WALLET);
-    setAddress(null);
-    setWalletKind(null);
+  const disconnect = useCallback(() => {
+    clearStoredWallet();
+    setStored({ address: null, kind: null });
     setError(null);
-  };
+  }, []);
+
+  const value = useMemo<WalletContextValue>(
+    () => ({
+      address: stored.address,
+      walletKind: stored.kind,
+      walletName: walletLabel(stored.kind),
+      ready,
+      connecting,
+      error,
+      openConnect: () => {
+        setError(null);
+        setDialogOpen(true);
+      },
+      connectWith,
+      disconnect,
+    }),
+    [stored, ready, connecting, error, connectWith, disconnect],
+  );
 
   return (
-    <WalletContext.Provider
-      value={{
-        address,
-        walletKind,
-        walletName: walletLabel(walletKind),
-        connecting,
-        error,
-        openConnect: () => {
-          setError(null);
-          setDialogOpen(true);
-        },
-        connectWith,
-        disconnect,
-      }}
-    >
+    <WalletContext.Provider value={value}>
       {children}
       <ConnectWalletDialog
         open={dialogOpen}

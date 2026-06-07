@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -12,8 +12,12 @@ import {
   PageCard,
   PageSection,
   PrimaryButton,
+  SecondaryButton,
   StatCard,
 } from "../components/ui/signet-ui";
+import { useWallet } from "../components/wallet/WalletProvider";
+import { useWalletBalance } from "../hooks/useWalletBalance";
+import { buySignalWithWallet, friendlyPurchaseError } from "../lib/x402/buy-signal";
 import { getSignalById } from "../lib/api/signals.functions";
 
 export const Route = createFileRoute("/signal/$id")({
@@ -26,42 +30,51 @@ export const Route = createFileRoute("/signal/$id")({
 
 function SignalDetailPage() {
   const { id } = Route.useParams();
-  const [purchased, setPurchased] = useState(false);
+  const queryClient = useQueryClient();
+  const { address, walletKind, walletName, ready, openConnect } = useWallet();
+  const { data: balance } = useWalletBalance(address);
   const [content, setContent] = useState<string | null>(null);
-  const [buyError, setBuyError] = useState<string | null>(null);
-  const [buying, setBuying] = useState(false);
 
   const { data: signal, isLoading } = useQuery({
     queryKey: ["signal", id],
     queryFn: () => getSignalById({ data: { id } }),
   });
 
+  const buyMutation = useMutation({
+    mutationFn: async () => {
+      if (!address || !walletKind) {
+        throw new Error("Connect your wallet to purchase.");
+      }
+      if (!signal?.endpoint) {
+        throw new Error("This signal is not available.");
+      }
+      if (balance && !balance.usdcOptedIn) {
+        throw new Error("Opt into USDC in your wallet before buying.");
+      }
+      if (balance && balance.usdc < (signal.price ?? 0)) {
+        throw new Error(`You need at least ${signal.price} USDC in your wallet.`);
+      }
+      return buySignalWithWallet(signal.endpoint, address, walletKind);
+    },
+    onSuccess: (body) => {
+      const payload = (body as { signal?: { content?: unknown } }).signal?.content ?? body;
+      setContent(typeof payload === "string" ? payload : JSON.stringify(payload, null, 2));
+      queryClient.invalidateQueries({ queryKey: ["signal", id] });
+      queryClient.invalidateQueries({ queryKey: ["marketplace"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", address] });
+    },
+  });
+
+  const purchased = Boolean(content);
   const accuracyHistory = [{ day: "Current", accuracy: signal?.accuracy ?? 0 }];
 
-  const buySignal = async () => {
-    if (!signal?.endpoint) return;
-    setBuying(true);
-    setBuyError(null);
-    try {
-      const res = await fetch(signal.endpoint, { method: "GET" });
-      if (res.status === 402) {
-        setBuyError(
-          "This signal requires a USDC payment. Connect a funded wallet to purchase.",
-        );
-        return;
-      }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const body = await res.json();
-      setContent(JSON.stringify(body.signal?.content ?? body, null, 2));
-      setPurchased(true);
-    } catch (e) {
-      setBuyError(e instanceof Error ? e.message : "Purchase failed");
-    } finally {
-      setBuying(false);
+  const handleBuy = () => {
+    if (!address) {
+      openConnect();
+      return;
     }
+    buyMutation.mutate();
   };
-
-  const arcadeLink = signal?.alphaArcadeLink;
 
   if (isLoading) {
     return (
@@ -97,26 +110,42 @@ function SignalDetailPage() {
         </div>
 
         <PageCard>
-          <CardHeader title="Signal content" badge={<Badge tone="muted">x402 protected</Badge>} />
+          <CardHeader title="Signal content" badge={<Badge tone="muted">Paid access</Badge>} />
           <CardBody className="relative min-h-[220px] pt-0">
             {!purchased ? (
               <>
                 <p className="blur-sm select-none text-white/60 leading-relaxed">{signal.preview}</p>
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-[2px] gap-4 rounded-b-xl">
-                  <PrimaryButton onClick={buySignal} disabled={buying}>
-                    {buying ? "Processing…" : `Buy for ${signal.price} USDC`}
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-[2px] gap-4 rounded-b-xl px-4">
+                  {ready && address ? (
+                    <p className="text-xs text-[#00DC82]/90 text-center">
+                      {walletName ?? "Wallet"} · {address.slice(0, 6)}…{address.slice(-4)}
+                      {balance ? ` · ${balance.usdc.toFixed(2)} USDC` : ""}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-white/50 text-center max-w-xs">
+                      Connect the same wallet you use across SIGNET to pay and unlock this signal.
+                    </p>
+                  )}
+                  <PrimaryButton onClick={handleBuy} disabled={buyMutation.isPending}>
+                    {buyMutation.isPending
+                      ? "Confirm in wallet…"
+                      : address
+                        ? `Buy for ${signal.price} USDC`
+                        : "Connect wallet to buy"}
                   </PrimaryButton>
-                  <p className="text-xs text-white/45 max-w-sm text-center px-4">
-                    Connect a wallet with USDC to unlock this signal, or browse free previews first.
-                  </p>
+                  {address && balance && !balance.usdcOptedIn && (
+                    <p className="text-xs text-amber-400/80 text-center max-w-sm">
+                      Add USDC to your wallet before purchasing.
+                    </p>
+                  )}
                 </div>
               </>
             ) : (
               <pre className="text-sm text-white/90 whitespace-pre-wrap font-mono leading-relaxed">{content}</pre>
             )}
-            {buyError && (
+            {buyMutation.isError && (
               <p className="mt-4 text-red-400/90 text-sm px-4 py-3 rounded-xl border border-red-400/20 bg-red-400/5">
-                {buyError}
+                {friendlyPurchaseError(buyMutation.error)}
               </p>
             )}
           </CardBody>
@@ -125,7 +154,7 @@ function SignalDetailPage() {
         <PageCard>
           <CardHeader title="Accuracy history" />
           <CardBody className="pt-0">
-            <div className="h-[200px] rounded-xl border border-white/[0.06] bg-black/20 p-2">
+            <div className="h-[200px] rounded-xl border border-white/6 bg-black/20 p-2">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={accuracyHistory}>
                   <XAxis dataKey="day" stroke="#ffffff44" tick={{ fontSize: 11 }} />
@@ -144,12 +173,13 @@ function SignalDetailPage() {
           </CardBody>
         </PageCard>
 
-        {arcadeLink && (
+        {signal.alphaArcadeLink && (
           <PageCard accent="purple">
-            <CardHeader title="Alpha reputation" badge={<Badge tone="muted">SDK verified</Badge>} />
+            <CardHeader title="Alpha reputation" badge={<Badge tone="muted">Verified</Badge>} />
             <CardBody className="pt-0 space-y-3">
               <p className="text-[13px] text-white/50">
-                Linked to {signal.alphaContext?.title ?? "a live Alpha market"}. Verified in-app via orderbook.
+                Linked to {signal.alphaContext?.title ?? "a live Alpha market"}. Accuracy is tracked
+                on-chain.
               </p>
               {signal.alphaContext?.impliedYes != null && (
                 <p className="text-sm text-white/70">
