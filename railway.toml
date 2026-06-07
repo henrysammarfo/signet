@@ -1,0 +1,11 @@
+# x402 server — deploy from REPO ROOT (no Railway root directory).
+# server/index.ts imports ../shared/* which is outside server/.
+[build]
+builder = "NIXPACKS"
+watchPatterns = ["server/**", "shared/**"]
+
+[deploy]
+startCommand = "npm run start --prefix server"
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"

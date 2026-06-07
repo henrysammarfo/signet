@@ -1,9 +1,3 @@
-[build]
-builder = "NIXPACKS"
-watchPatterns = ["server/**", "shared/**"]
-
-[deploy]
-startCommand = "npm run start"
-healthcheckPath = "/health"
-healthcheckTimeout = 60
-restartPolicyType = "ON_FAILURE"
+# Deprecated: use /railway.toml at repo root.
+# Railway root directory must be unset (/) so shared/ is in the build context.
+# If this path is set in Railway service settings, change it to /railway.toml.

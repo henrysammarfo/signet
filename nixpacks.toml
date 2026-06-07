@@ -1,0 +1,12 @@
+# Install only server deps; full repo stays available for ../shared imports.
+[variables]
+NIXPACKS_NODE_VERSION = "20"
+
+[phases.install]
+cmds = ["npm ci --prefix server"]
+
+[phases.build]
+cmds = ["echo x402-server-ready"]
+
+[start]
+cmd = "npm run start --prefix server"

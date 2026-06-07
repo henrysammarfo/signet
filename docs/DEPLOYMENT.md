@@ -74,7 +74,7 @@ See **[deploy/README.md](../deploy/README.md)** for step-by-step Vercel + Railwa
 | Service | Host | Config |
 |---------|------|--------|
 | Frontend | **Vercel** | `vercel.json`, Nitro `vercel` preset |
-| x402 server | **Railway** | Root directory `server/`, `server/railway.toml` |
+| x402 server | **Railway** | Repo root `/`, `railway.toml` + `nixpacks.toml` (needs `shared/`) |
 | Supabase | supabase.com | Already hosted |
 
 ### Import env files

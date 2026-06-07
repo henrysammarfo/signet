@@ -11,10 +11,13 @@
 
 ## x402 backend → Railway
 
-1. New service → same repo, **Root Directory: `server`**
-2. Import env from [`railway.env.example`](./railway.env.example)
-3. `railway.toml` health check: `GET /health`
-4. Copy public Railway URL → set `VITE_X402_SERVER_URL` and `X402_SERVER_URL` on Vercel
+1. New service → same repo, **Root Directory: leave empty** (repo root `/`)
+2. Config file: `/railway.toml` (repo root — **not** `/server`)
+3. Import env from [`railway.env.example`](./railway.env.example)
+4. Health check: `GET /health` (see `railway.toml`)
+5. Copy public Railway URL → set `VITE_X402_SERVER_URL` and `X402_SERVER_URL` on Vercel
+
+> **Why not `server/` root?** The x402 server imports `../shared/` at runtime. A root directory of `server` excludes `shared/` from the container and the process crashes with `ERR_MODULE_NOT_FOUND`.
 
 ## Order of operations
 
