@@ -3,7 +3,7 @@
 NIXPACKS_NODE_VERSION = "20"
 
 [phases.install]
-cmds = ["npm ci --prefix server"]
+cmds = ["npm ci --prefix server", "npm ci --prefix shared --omit=dev"]
 
 [phases.build]
 cmds = ["echo x402-server-ready"]
